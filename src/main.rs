@@ -1,15 +1,13 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 
 /// ### GET /
 /// Returns a "Hello world!" response.
-#[get("/")]
 async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
 /// ### POST /echo
 /// Returns the request body as a response.
-#[post("/echo")]
 async fn echo(req_body: String) -> impl Responder {
     HttpResponse::Ok().body(req_body)
 }
@@ -25,9 +23,14 @@ async fn manual_hello() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .service(hello)
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
+        .service(
+            // prefixes all resources and routes attached to it...
+            web::scope("/api/v1")
+                // ...so this handles requests for `GET /app/index.html`
+                .route("/", web::get().to(hello))
+                .route("/hey", web::get().to(manual_hello))
+                .route("/echo", web::post().to(echo)),
+        )
     })
     .bind(("127.0.0.1", 8080))?
     .run()
