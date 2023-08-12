@@ -1,6 +1,6 @@
 use actix_web::{App, HttpServer, get, Responder, HttpResponse};
 
-mod api_v1;
+mod urls;
 
 #[get("/healthcheck")]
 async fn healthcheck() -> impl Responder {
@@ -12,10 +12,10 @@ async fn healthcheck() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-        .configure(api_v1::api_service)
+        .configure(urls::service)
         .service(healthcheck)
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind(("127.0.0.1", 8080))?
     .run()
     .await
 }
