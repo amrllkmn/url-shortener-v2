@@ -1,9 +1,9 @@
 mod test;
 
 use actix_web::{web, Responder};
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Url {
     id: i32,
     url: String,
@@ -38,7 +38,7 @@ pub fn service(cfg: &mut web::ServiceConfig) {
     cfg.service(
             // prefixes all resources and routes attached to it...
             web::scope("/urls")
-                // ...so this handles requests for `GET /app/index.html`
+                // ...so this handles requests for `GET /urls/`
                 .route("/", web::get().to(list_urls))
     );
 }
