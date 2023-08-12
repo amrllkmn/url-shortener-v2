@@ -29,7 +29,7 @@ async fn list_urls() -> Result<impl Responder, actix_web::Error> {
         }
     ];
 
-    Ok(web::Json(list))
+    Ok(web::Json(list)) // We don't have proper error handling as we are not using a database yet.
 }
 
 pub fn service(cfg: &mut web::ServiceConfig) {
