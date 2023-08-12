@@ -1,3 +1,5 @@
+mod test;
+
 use actix_web::{web, Responder};
 use serde::Serialize;
 
