@@ -1,5 +1,5 @@
-use actix_web::{web, HttpResponse, Responder};
-use serde::{Serialize};
+use actix_web::{web, Responder};
+use serde::Serialize;
 
 #[derive(Serialize)]
 struct Url {
@@ -28,7 +28,8 @@ async fn list_urls() -> Result<impl Responder, actix_web::Error> {
             slug: "facebook".to_string(),
         }
     ];
-    Ok(HttpResponse::Ok().json(list))
+
+    Ok(web::Json(list))
 }
 
 pub fn service(cfg: &mut web::ServiceConfig) {
