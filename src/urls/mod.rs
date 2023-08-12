@@ -1,5 +1,3 @@
-mod test;
-
 use actix_web::{web, Responder};
 use serde::{Serialize, Deserialize};
 
@@ -42,3 +40,6 @@ pub fn service(cfg: &mut web::ServiceConfig) {
                 .route("/", web::get().to(list_urls))
     );
 }
+
+#[cfg(test)]
+mod test;
