@@ -1,6 +1,7 @@
 use actix_web::{App, HttpServer, get, Responder, HttpResponse};
 
 mod urls;
+mod entities;
 
 #[get("/healthcheck")]
 async fn healthcheck() -> impl Responder {

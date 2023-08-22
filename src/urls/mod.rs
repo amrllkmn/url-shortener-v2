@@ -1,6 +1,7 @@
 use actix_web::{web, Responder};
 use serde::{Serialize, Deserialize};
 
+use super::entities::{url, Mutation};
 #[derive(Serialize, Deserialize, Debug)]
 struct Url {
     id: i32,
@@ -30,6 +31,11 @@ async fn list_urls() -> Result<impl Responder, actix_web::Error> {
     ];
 
     Ok(web::Json(list)) // We don't have proper error handling as we are not using a database yet.
+}
+
+async fn create_url(data: web::Data<AppState>, url_form: web::Form<url::Model>) -> Result<impl Responder, Error> {
+    let conn = &data.conn;
+    let form = url_form.into_inner();
 }
 
 pub fn service(cfg: &mut web::ServiceConfig) {
