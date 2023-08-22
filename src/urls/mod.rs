@@ -1,5 +1,6 @@
-use actix_web::{web, Responder};
+use actix_web::{web, Responder, HttpResponse};
 use serde::{Serialize, Deserialize};
+use sea_orm::DatabaseConnection;
 
 use super::entities::{url, Mutation};
 #[derive(Serialize, Deserialize, Debug)]
@@ -7,6 +8,9 @@ struct Url {
     id: i32,
     url: String,
     slug: String,
+}
+struct AppState {
+    conn: DatabaseConnection,
 }
 /// ### GET urls/
 /// Returns a list of URLS shortened.
@@ -33,9 +37,16 @@ async fn list_urls() -> Result<impl Responder, actix_web::Error> {
     Ok(web::Json(list)) // We don't have proper error handling as we are not using a database yet.
 }
 
-async fn create_url(data: web::Data<AppState>, url_form: web::Form<url::Model>) -> Result<impl Responder, Error> {
+async fn create_url(data: web::Data<AppState>, url_form: web::Form<url::Model>) -> Result<HttpResponse, actix_web::Error> {
     let conn = &data.conn;
     let form = url_form.into_inner();
+
+    Mutation::create(conn, form)
+    .await
+    .expect("Could not create a URL");
+
+
+    Ok(HttpResponse::Created().body("URL Created."))
 }
 
 pub fn service(cfg: &mut web::ServiceConfig) {
@@ -44,6 +55,7 @@ pub fn service(cfg: &mut web::ServiceConfig) {
             web::scope("/urls")
                 // ...so this handles requests for `GET /urls/`
                 .route("/", web::get().to(list_urls))
+                .route("/", web::post().to(create_url))
     );
 }
 
