@@ -34,7 +34,7 @@ async fn list_urls() -> Result<impl Responder, actix_web::Error> {
     Ok(web::Json(list)) // We don't have proper error handling as we are not using a database yet.
 }
 
-async fn create_url(data: web::Data<AppState>, url_form: web::Form<url::Model>) -> Result<HttpResponse, actix_web::Error> {
+async fn create_url(data: web::Data<AppState>, url_form: web::Json<url::Model>) -> Result<HttpResponse, actix_web::Error> {
     let conn = &data.conn;
     let form = url_form.into_inner();
 
