@@ -7,11 +7,14 @@ use serde::{Serialize, Deserialize};
 #[sea_orm(table_name = "url")]
 pub struct Model {
     #[sea_orm(primary_key)]
+    #[serde(skip_deserializing)] // So that it stops looking for id in the json payload
     pub id: i32,
     pub url: String,
     pub title: String,
     pub slug: String,
+    #[serde(skip_deserializing)] // Stop looking for created_at
     pub created_at: DateTime,
+    #[serde(skip_deserializing)] // Stop looking for updated_at
     pub updated_at: DateTime,
 }
 
