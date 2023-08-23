@@ -1,6 +1,6 @@
 use actix_web::{web, Responder, HttpResponse};
 use serde::{Serialize, Deserialize};
-use sea_orm::DatabaseConnection;
+use super::AppState;
 
 use super::entities::{url, Mutation};
 #[derive(Serialize, Deserialize, Debug)]
@@ -8,9 +8,6 @@ struct Url {
     id: i32,
     url: String,
     slug: String,
-}
-struct AppState {
-    conn: DatabaseConnection,
 }
 /// ### GET urls/
 /// Returns a list of URLS shortened.
