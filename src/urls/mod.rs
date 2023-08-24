@@ -1,4 +1,4 @@
-use actix_web::{web, Responder, HttpResponse};
+use actix_web::{web, Responder, HttpResponse, error, Result};
 use serde::{Serialize, Deserialize};
 use super::AppState;
 
@@ -38,12 +38,18 @@ async fn create_url(data: web::Data<AppState>, url_form: web::Json<url::Model>) 
     let conn = &data.conn;
     let form = url_form.into_inner();
 
-    Mutation::create(conn, form)
-    .await
-    .expect("Could not create a URL");
+    match Mutation::create(conn, form).await {
+        Ok(_) => Ok(HttpResponse::Created().body("URL Created.")),
+        Err(err) => {
+            // Log the error or handle it as needed
+            println!("Database error: {:?}",err);
 
+            // You can customize the error response based on the error type
+            let response ="Internal Server Error".to_string();
 
-    Ok(HttpResponse::Created().body("URL Created."))
+            Ok(HttpResponse::InternalServerError().body(response))
+        }
+    }
 }
 
 pub fn service(cfg: &mut web::ServiceConfig) {
