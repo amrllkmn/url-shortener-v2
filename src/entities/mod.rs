@@ -9,14 +9,12 @@ pub struct Mutation;
 
 impl Mutation {
     pub async fn create(db: &DbConn, form_data: url::Model) -> Result<url::Model, DbErr> {
-        let model = url::ActiveModel {
+        url::ActiveModel {
             url: Set(form_data.url.to_owned()),
             slug: Set(form_data.slug.to_owned()),
             ..Default::default()
         }
         .insert(db)
-        .await?;
-
-        Ok(model)
+        .await
     }
 }
