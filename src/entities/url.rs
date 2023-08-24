@@ -61,7 +61,7 @@ impl ActiveModelBehavior for ActiveModel {
                 title,
                 ..Default::default()
             };
-
+            println!("Inserting data: {insert}");
             Ok(model)
         })
     }
