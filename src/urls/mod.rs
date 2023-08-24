@@ -1,4 +1,4 @@
-use actix_web::{web, Responder, HttpResponse, error, Result};
+use actix_web::{web, Responder, HttpResponse, Result};
 use serde::{Serialize, Deserialize};
 use super::AppState;
 
