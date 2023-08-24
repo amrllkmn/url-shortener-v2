@@ -24,7 +24,7 @@ pub struct Model {
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {
-    fn before_save<'life0,'async_trait,C, >(self,db: &'life0 C,insert:bool) ->  core::pin::Pin<Box<dyn core::future::Future<Output = Result<Self,DbErr> > + core::marker::Send+'async_trait> >where C:ConnectionTrait,C:'async_trait+ ,'life0:'async_trait,Self: core::marker::Send+'async_trait {
+    fn before_save<'life0,'async_trait,C, >(self,_db: &'life0 C,insert:bool) ->  core::pin::Pin<Box<dyn core::future::Future<Output = Result<Self,DbErr> > + core::marker::Send+'async_trait> >where C:ConnectionTrait,C:'async_trait+ ,'life0:'async_trait,Self: core::marker::Send+'async_trait {
         println!("Checking slug before insertion...");
         Box::pin(async move {
             // Check if the slug column is empty
