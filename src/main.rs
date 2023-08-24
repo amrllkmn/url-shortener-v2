@@ -1,4 +1,5 @@
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
+use migration::{Migrator, MigratorTrait};
 use sea_orm::{Database, DatabaseConnection};
 
 mod entities;
@@ -18,6 +19,9 @@ async fn healthcheck() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     let db_url = String::from("postgres://postgres:postgres@localhost:5434/url_shortener_dev"); // Hardcoding it cos for now it's a docker db server
     let db_conn = Database::connect(&db_url).await.unwrap();
+
+    // Run migrations before connecting to database
+    Migrator::up(&db_conn, None).await.unwrap();
     let state = AppState { conn: db_conn };
 
     HttpServer::new(move || {
