@@ -5,14 +5,14 @@ use serde::{Deserialize, Serialize};
 use super::entities::{url, Mutation};
 
 #[derive(Serialize)]
-struct CreatedResponse {
-    message: String,
+struct CreatedResponse<'a> {
+    message: &'a str,
     data: url::Model,
 }
 
 #[derive(Serialize)]
-struct InternalErrorResponse {
-    message: String,
+struct InternalErrorResponse<'a> {
+    message: &'a str,
 }
 #[derive(Serialize, Deserialize, Debug)]
 struct Url {
@@ -54,7 +54,7 @@ async fn create_url(
 
     match Mutation::create(conn, form).await {
         Ok(url) => Ok(HttpResponse::Created().json(CreatedResponse {
-            message: "URL Created.".to_string(),
+            message: "URL Created.",
             data: url,
         })),
         Err(err) => {
@@ -62,7 +62,7 @@ async fn create_url(
             println!("Database error: {:?}", err);
 
             // You can customize the error response based on the error type
-            let message = "Internal Server Error".to_string();
+            let message = "Internal Server Error";
 
             Ok(HttpResponse::InternalServerError().json(InternalErrorResponse { message }))
         }
