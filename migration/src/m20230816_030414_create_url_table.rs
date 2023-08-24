@@ -22,6 +22,18 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Url::Url).string().not_null())
                     .col(ColumnDef::new(Url::Title).string().not_null())
                     .col(ColumnDef::new(Url::Slug).string().not_null())
+                    .col(
+                        ColumnDef::new(Url::CreatedAt)
+                            .timestamp()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Url::UpdatedAt)
+                            .timestamp()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await
@@ -42,4 +54,6 @@ enum Url {
     Url,
     Title,
     Slug,
+    CreatedAt,
+    UpdatedAt,
 }
