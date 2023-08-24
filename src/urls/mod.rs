@@ -3,6 +3,17 @@ use actix_web::{web, HttpResponse, Responder, Result};
 use serde::{Deserialize, Serialize};
 
 use super::entities::{url, Mutation};
+
+#[derive(Serialize)]
+struct CreatedResponse<'a> {
+    message: &'a str,
+    data: url::Model,
+}
+
+#[derive(Serialize)]
+struct InternalErrorResponse<'a> {
+    message: &'a str,
+}
 #[derive(Serialize, Deserialize, Debug)]
 struct Url {
     id: i32,
@@ -42,15 +53,18 @@ async fn create_url(
     let form = url_form.into_inner();
 
     match Mutation::create(conn, form).await {
-        Ok(_) => Ok(HttpResponse::Created().body("URL Created.")),
+        Ok(url) => Ok(HttpResponse::Created().json(CreatedResponse {
+            message: "URL Created.",
+            data: url,
+        })),
         Err(err) => {
             // Log the error or handle it as needed
             println!("Database error: {:?}", err);
 
             // You can customize the error response based on the error type
-            let response = "Internal Server Error".to_string();
+            let message = "Internal Server Error";
 
-            Ok(HttpResponse::InternalServerError().body(response))
+            Ok(HttpResponse::InternalServerError().json(InternalErrorResponse { message }))
         }
     }
 }
