@@ -5,11 +5,10 @@ pub mod prelude;
 
 pub mod url;
 
-
 pub struct Mutation;
 
 impl Mutation {
-    pub async fn create( db: &DbConn, form_data: url::Model) -> Result<url::ActiveModel, DbErr> {
+    pub async fn create(db: &DbConn, form_data: url::Model) -> Result<url::ActiveModel, DbErr> {
         url::ActiveModel {
             url: Set(form_data.url.to_owned()),
             slug: Set(form_data.slug.to_owned()),
@@ -18,5 +17,4 @@ impl Mutation {
         .save(db)
         .await
     }
-    
 }

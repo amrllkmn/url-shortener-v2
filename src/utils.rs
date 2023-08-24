@@ -1,6 +1,5 @@
 use rand::distributions::Alphanumeric;
 use rand::Rng;
-use reqwest;
 use scraper::{Html, Selector};
 use std::error::Error;
 
@@ -30,8 +29,11 @@ pub async fn get_title_from_url(url: &str) -> Result<String, Box<dyn Error>> {
     let title_selector = Selector::parse("title").unwrap();
 
     // Extract the title text
-    let title = fragment.select(&title_selector).next().map(|element| element.inner_html());
+    let title = fragment
+        .select(&title_selector)
+        .next()
+        .map(|element| element.inner_html());
 
     // Return the extracted title (or a default value if none is found)
-    Ok(title.unwrap_or_else(|| "".to_string()))
+    Ok(title.unwrap_or_default())
 }
