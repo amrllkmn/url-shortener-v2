@@ -3071,6 +3071,7 @@ name = "url-shortener-v2"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "rand",
  "sea-orm",
  "serde",
 ]
