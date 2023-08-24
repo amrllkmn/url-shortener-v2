@@ -3708,6 +3708,7 @@ name = "url-shortener-v2"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "migration",
  "rand 0.8.5",
  "reqwest",
  "scraper",
