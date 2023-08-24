@@ -3,6 +3,7 @@ use sea_orm::{DatabaseConnection, Database};
 
 mod urls;
 mod entities;
+mod utils;
 #[derive(Debug, Clone)]
 struct AppState {
     conn: DatabaseConnection,
