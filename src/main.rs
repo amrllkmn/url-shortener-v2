@@ -1,4 +1,4 @@
-use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 use migration::{Migrator, MigratorTrait};
 use sea_orm::{Database, DatabaseConnection};
 
@@ -29,7 +29,6 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(state.clone()))
             .configure(urls::service)
             .service(healthcheck)
-            .wrap(middleware::Logger::default())
     })
     .bind(("127.0.0.1", 8080))?
     .run()
