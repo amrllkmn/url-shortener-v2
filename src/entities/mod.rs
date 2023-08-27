@@ -7,6 +7,8 @@ pub mod url;
 
 pub struct Mutation;
 
+pub struct Query;
+
 impl Mutation {
     pub async fn create(db: &DbConn, form_data: url::Model) -> Result<url::Model, DbErr> {
         url::ActiveModel {
@@ -16,5 +18,11 @@ impl Mutation {
         }
         .insert(db)
         .await
+    }
+}
+
+impl Query {
+    pub async fn find_all(db: &DbConn) -> Result<Vec<url::Model>, DbErr> {
+        prelude::Url::find().all(db).await
     }
 }
