@@ -41,6 +41,7 @@ async fn create_url(
     data: web::Data<AppState>,
     url_form: web::Json<url::Model>,
 ) -> Result<HttpResponse, actix_web::Error> {
+    println!("POST /urls/");
     let conn = &data.conn;
     let form = url_form.into_inner();
 
