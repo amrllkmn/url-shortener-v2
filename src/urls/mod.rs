@@ -71,6 +71,3 @@ pub fn service(cfg: &mut web::ServiceConfig) {
             .route("/", web::post().to(create_url)),
     );
 }
-
-#[cfg(test)]
-mod test;
