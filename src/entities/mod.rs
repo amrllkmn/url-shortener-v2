@@ -25,4 +25,11 @@ impl Query {
     pub async fn find_all(db: &DbConn) -> Result<Vec<url::Model>, DbErr> {
         prelude::Url::find().all(db).await
     }
+
+    pub async fn find_by_slug(db: &DbConn, slug: String) -> Result<Option<url::Model>, DbErr> {
+        prelude::Url::find()
+            .filter(url::Column::Slug.eq(slug))
+            .one(db)
+            .await
+    }
 }

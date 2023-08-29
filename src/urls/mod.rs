@@ -1,5 +1,9 @@
 use super::AppState;
-use actix_web::{web, HttpResponse, Result};
+use actix_web::{
+    http::header,
+    web::{self},
+    HttpResponse, Result,
+};
 use serde::Serialize;
 
 use super::entities::{url, Mutation, Query};
@@ -12,6 +16,11 @@ struct CreatedResponse<'a> {
 
 #[derive(Serialize)]
 struct InternalErrorResponse<'a> {
+    message: &'a str,
+}
+
+#[derive(Serialize)]
+struct NotFoundErrorResponse<'a> {
     message: &'a str,
 }
 #[derive(Serialize)]
@@ -62,12 +71,47 @@ async fn create_url(
     }
 }
 
+async fn redirect_url(
+    data: web::Data<AppState>,
+    slug: web::Path<String>,
+) -> Result<HttpResponse, actix_web::Error> {
+    println!("GET /urls/:slug");
+    let conn = &data.conn;
+    let slug = slug.into_inner();
+    match Query::find_by_slug(conn, slug).await {
+        Ok(db_transaction) => {
+            if let Some(url) = db_transaction {
+                let redirected_url = url.url;
+                let header_value = header::HeaderValue::from_str(redirected_url.as_str())
+                    .expect("The url isn't a string then.");
+                Ok(HttpResponse::TemporaryRedirect()
+                    .append_header((header::LOCATION, header_value))
+                    .finish())
+            } else {
+                Ok(HttpResponse::NotFound().json(NotFoundErrorResponse {
+                    message: "URL not found.",
+                }))
+            }
+        }
+        Err(err) => {
+            // Log the error or handle it as needed
+            println!("Database error: {:?}", err);
+
+            // You can customize the error response based on the error type
+            let message = "Internal Server Error";
+
+            Ok(HttpResponse::InternalServerError().json(InternalErrorResponse { message }))
+        }
+    }
+}
+
 pub fn service(cfg: &mut web::ServiceConfig) {
     cfg.service(
         // prefixes all resources and routes attached to it...
         web::scope("/urls")
             // ...so this handles requests for `GET /urls/`
             .route("/", web::get().to(list_urls))
-            .route("/", web::post().to(create_url)),
+            .route("/", web::post().to(create_url))
+            .route("/{slug}", web::get().to(redirect_url)),
     );
 }
