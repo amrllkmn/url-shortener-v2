@@ -1,8 +1,8 @@
 use super::AppState;
-use actix_web::{web, HttpResponse, Responder, Result};
-use serde::{Deserialize, Serialize};
+use actix_web::{web, HttpResponse, Result};
+use serde::Serialize;
 
-use super::entities::{url, Mutation};
+use super::entities::{url, Mutation, Query};
 
 #[derive(Serialize)]
 struct CreatedResponse<'a> {
@@ -14,41 +14,34 @@ struct CreatedResponse<'a> {
 struct InternalErrorResponse<'a> {
     message: &'a str,
 }
-#[derive(Serialize, Deserialize, Debug)]
-struct Url {
-    id: i32,
-    url: String,
-    slug: String,
+#[derive(Serialize)]
+struct OkResponse {
+    data: Vec<url::Model>,
 }
 /// ### GET urls/
 /// Returns a list of URLS shortened.
-async fn list_urls() -> Result<impl Responder, actix_web::Error> {
-    println!("GET /urls");
-    let list: [Url; 3] = [
-        Url {
-            id: 1,
-            url: "https://www.google.com".to_string(),
-            slug: "google".to_string(),
-        },
-        Url {
-            id: 2,
-            url: "https://www.youtube.com".to_string(),
-            slug: "youtube".to_string(),
-        },
-        Url {
-            id: 3,
-            url: "https://www.facebook.com".to_string(),
-            slug: "facebook".to_string(),
-        },
-    ];
+async fn list_urls(data: web::Data<AppState>) -> Result<HttpResponse, actix_web::Error> {
+    println!("GET /urls/");
+    let conn = &data.conn;
+    match Query::find_all(conn).await {
+        Ok(urls) => Ok(HttpResponse::Ok().json(OkResponse { data: urls })),
+        Err(err) => {
+            // Log the error or handle it as needed
+            println!("Database error: {:?}", err);
 
-    Ok(web::Json(list)) // We don't have proper error handling as we are not using a database yet.
+            // You can customize the error response based on the error type
+            let message = "Internal Server Error";
+
+            Ok(HttpResponse::InternalServerError().json(InternalErrorResponse { message }))
+        }
+    }
 }
 
 async fn create_url(
     data: web::Data<AppState>,
     url_form: web::Json<url::Model>,
 ) -> Result<HttpResponse, actix_web::Error> {
+    println!("POST /urls/");
     let conn = &data.conn;
     let form = url_form.into_inner();
 
@@ -78,6 +71,3 @@ pub fn service(cfg: &mut web::ServiceConfig) {
             .route("/", web::post().to(create_url)),
     );
 }
-
-#[cfg(test)]
-mod test;
