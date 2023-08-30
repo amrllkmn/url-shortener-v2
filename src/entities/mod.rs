@@ -19,6 +19,14 @@ impl Mutation {
         .insert(db)
         .await
     }
+
+    pub async fn delete(db: &DbConn, id: i32) -> Result<DeleteResult, DbErr> {
+        if let Some(url) = prelude::Url::find_by_id(id).one(db).await? {
+            url.delete(db).await
+        } else {
+            Err(DbErr::Custom("Cannot find URL.".to_string()))
+        }
+    }
 }
 
 impl Query {
