@@ -24,8 +24,8 @@ struct NotFoundErrorResponse<'a> {
     message: &'a str,
 }
 #[derive(Serialize)]
-struct OkResponse {
-    data: Vec<url::Model>,
+struct OkResponse<T> {
+    data: T,
 }
 /// ### GET urls/
 /// Returns a list of URLS shortened.
@@ -105,6 +105,32 @@ async fn redirect_url(
     }
 }
 
+async fn delete_url(
+    data: web::Data<AppState>,
+    id: web::Path<i32>,
+) -> Result<HttpResponse, actix_web::Error> {
+    let conn = &data.conn;
+    let id = id.into_inner();
+
+    match Mutation::delete(conn, id).await {
+        Ok(_) => {
+            println!("URL Deleted.");
+            Ok(HttpResponse::Ok().json(OkResponse {
+                data: "URL Deleted.",
+            }))
+        }
+        Err(err) => {
+            // Log the error or handle it as needed
+            println!("Database error: {:?}", err);
+
+            // You can customize the error response based on the error type
+            let message = "Internal Server Error";
+
+            Ok(HttpResponse::InternalServerError().json(InternalErrorResponse { message }))
+        }
+    }
+}
+
 pub fn service(cfg: &mut web::ServiceConfig) {
     cfg.service(
         // prefixes all resources and routes attached to it...
@@ -112,6 +138,7 @@ pub fn service(cfg: &mut web::ServiceConfig) {
             // ...so this handles requests for `GET /urls/`
             .route("/", web::get().to(list_urls))
             .route("/", web::post().to(create_url))
-            .route("/{slug}", web::get().to(redirect_url)),
+            .route("/{slug}", web::get().to(redirect_url))
+            .route("/{id}", web::delete().to(delete_url)),
     );
 }
