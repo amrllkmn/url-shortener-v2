@@ -1,0 +1,18 @@
+[package]
+name = "entities"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "entities"
+path = "src/mod.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+rand = "^0.8"
+reqwest = "0.11"
+scraper = "0.12"
+
+[dependencies.sea-orm]
+version = "0.12.2" # sea-orm version
