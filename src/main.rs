@@ -2,9 +2,7 @@ use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 use migration::{Migrator, MigratorTrait};
 use sea_orm::{Database, DatabaseConnection};
 
-mod entities;
 mod urls;
-mod utils;
 #[derive(Debug, Clone)]
 struct AppState {
     conn: DatabaseConnection,

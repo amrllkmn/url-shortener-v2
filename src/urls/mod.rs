@@ -6,7 +6,9 @@ use actix_web::{
 };
 use serde::Serialize;
 
-use super::entities::{url, Mutation, Query};
+use entities::url;
+
+use service::{Mutation, Query};
 
 #[derive(Serialize)]
 struct CreatedResponse<'a> {
